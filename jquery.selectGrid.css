@@ -1,0 +1,38 @@
+/*列文字超出隐藏*/
+.selectGrid_body td {
+	overflow: hidden;
+}
+/**下拉表格panel*/
+.selectGrid_body {
+	position: absolute;
+	z-index: 110000;
+	display: none;
+	width: 100%;
+	border: 1px solid #ddd;
+	background: rgb(255, 255, 255);
+	box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+	margin-bottom: 1rem;
+}
+
+.selectGrid_body>.selectGrid_bodyDiv>table {
+	margin-bottom: 0;
+	border-left: 0;
+}
+
+.selectGrid_bodyDiv {
+	height: auto;
+}
+
+/**选中行变色*/
+.selectGrid_choose_row {
+	background-color: rgb(245, 245, 245);
+}
+
+/**表头颜色区分*/
+.selectGrid_headerDiv>table {
+	background: rgb(247, 247, 247);
+}
+
+.selectGrid_button {
+	color: rgb(153, 153, 153);
+}

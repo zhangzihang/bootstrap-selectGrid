@@ -9,7 +9,7 @@
 (function ($) {
 
     //下拉表格对象
-    var SelectGrid = function (el, options) {
+    let SelectGrid = function (el, options) {
         this.options = options;
         this.$el = $(el);
 
@@ -47,12 +47,12 @@
         onBeforeLoad: undefined,//请求成功后，初始化表格前触发,用于处理数据,参数:data，返回处理后结果，返回false取消加载
         onLoadSuccess: undefined,//数据加载完毕后触发，参数:data
         onClickRow: undefined,//点击行，参数:$tr,row
-        inputChange: undefined,//当输入框中值改变时触发，返回false则不请求后台
-        header:undefined
+        inputChange: undefined//当输入框中值改变时触发，返回false则不请求后台
+
     }
 
     //下拉表格方法
-    var allowedMethods = [
+    let allowedMethods = [
         "clearValue",
         "setValue",
         "getValue"
@@ -90,10 +90,10 @@
         this.initEvent();
         // 初始化加载
         if (this.options.initLoad) {
-            var _self = this;
-            var url = _self.options.url;
+            let _self = this;
+            let url = _self.options.url;
 
-            var reqParams = {};
+            let reqParams = {};
             reqParams[_self.options.queryField] = ''
             if (typeof _self.options.queryParams === "function") {
                 reqParams = _self.options.queryParams(reqParams);
@@ -101,26 +101,13 @@
                     return;
                 }
             }
-            var header = _self.options.header;
             //加载表格数据
-            jQuery.ajax({
-                'type': 'GET',
-                'url': url,
-                'data': reqParams,
-                'dataType': 'json',
-                'beforeSend':function(request){
-                    if(header){
-                        request.setRequestHeader("mongoid",header);
-                    }
-                },
-                'success': function (data) {
-                    if (typeof _self.options.onBeforeLoad === "function") {
-                        data = _self.options.onBeforeLoad(data);
-                    }
-                    _self.loadData(data);
+            $.getJSON(url, reqParams, function (data) {
+                if (typeof _self.options.onBeforeLoad === "function") {
+                    data = _self.options.onBeforeLoad(data);
                 }
+                _self.loadData(data);
             });
-
         }
     }
 
@@ -128,15 +115,15 @@
     SelectGrid.prototype.initInput = function () {
 
         //如果标签是select则选中后赋值给option,否则如果为input则设置为隐藏，并且选中时赋值val
-        if (this.$el[0].tagName == 'INPUT') {
+        if (this.$el[0].tagName === 'INPUT') {
             //创建隐藏input存储idField的值
 
-            var $hideInput = $("<input type='hidden' data-selectGrid-id='" + this.$el.attr("id")
+            let $hideInput = $("<input type='hidden' data-select-grid-id='" + this.$el.attr("id")
                 + "' class='selectGrid_hideInput' />").attr("name", this.$el.attr("name"));
             this.$el.removeAttr("name").addClass("selectGrid");
 
             //新建span把input包裹在其中
-            var $span = $("<span></span>");
+            let $span = $("<span></span>");
             //添加span到input父元素中
             this.$el.after($span);
             //input放入span
@@ -144,29 +131,29 @@
 
             //hideInput放入$el后
             this.$el.after($hideInput);
-            var height = parseFloat(this.$el.css("height"));
-            //var width = parseFloat(this.$el.css("width"));
+            let height = parseFloat(this.$el.css("height"));
             //字体图标的字体大小为总高度的30%,top为35%,right为fontSize+12px;
-            var $iconSpan = $("<span class='glyphicon glyphicon-triangle-bottom selectGrid_button' " +
+            let $iconSpan = $("<span class='bi-triangle-bottom selectGrid_button' " +
                 "style='position:absolute;font-size:" + (height * 0.3) + "px;line-height:" + height + "px;" +
                 "right:" + (height * 0.3 + 12) + "px;height:100%' >" +
                 "</span>");
             //下拉图标放在右侧
             this.$el.after($iconSpan);
 
-            var _self = this;
+            let _self = this;
 
             //绑定各种事件
             $iconSpan.click(function () {
                 if (_self.$panelDiv.is(":hidden")) {
-                    var x = _self.$el.offset().top;
-                    var y = _self.$el.offset().left;
-                    var height = _self.$el.actual('outerHeight');
+                    let x = _self.$el.offset().top;
+                    let y = _self.$el.offset().left;
+                    let height = _self.$el.outerHeight();
 
-                    var top = x + height + 1;
-                    var left = y + 1;
+                    let top = x + height + 1;
+                    let left = y + 1;
                     _self.$panelDiv.css("top", top + "px").css("left", left + "px");
                     _self.$panelDiv.show();
+                    _self.$bodyDiv.find("table").css("margin-top", - _self.$headerDiv.outerHeight());
                 } else {
                     _self.$panelDiv.hide();
                 }
@@ -184,7 +171,7 @@
     }
     //初始化table
     SelectGrid.prototype.initTable = function () {
-        var $panelDiv = $('<div class="selectGrid_body" ></div>');
+        let $panelDiv = $('<div class="selectGrid_body" ></div>');
         this.options.panelWidth = this.options.panelWidth || this.$el.css("width");
         if (!this.options.panelWidth.endsWith("%") && !this.options.panelWidth.endsWith("px")) {
             $panelDiv.css("width", this.options.panelWidth + "px");
@@ -194,62 +181,62 @@
 
 
         //下拉表格(固定表头)
-        var $tableHeader = $("<table class='table table-bordered' style='margin-bottom:0px'  ></table>");
+        let $tableHeader = $("<table class='table table-bordered' style='margin-bottom:0px'  ></table>");
         //初始化表头
-        var columns = this.options.columns;
-        var $tr = $("<tr></tr>");
+        let columns = this.options.columns;
+        let $tr = $("<tr></tr>");
         $.each(columns, function () {
-            var field = this.field;
-            var title = this.title;
-            var width = this.width;
+            let field = this.field;
+            let title = this.title;
+            let width = this.width;
             if (!width.endsWith("%") && !width.endsWith("px")) {
                 width = width + "px";
             }
-            var $th = $("<th style='border-bottom:0px' ></th>").text(title).attr("data-field", field).css("width", width);
+            let $th = $("<th style='border-bottom:0px' ></th>").text(title).attr("data-field", field).css("width", width);
             $tr.append($th);
         });
 
         //创建固定表头
-        var $thead = $("<thead></thead>").append($tr);
+        let $thead = $("<thead></thead>").append($tr);
         //初始化表头完成
         $tableHeader.append($thead);
 
         //初始化表体
-        var $tableBody = $("<table class='table table-hover table-bordered' style='border-bottom:0px'  ></table>");
+        let $tableBody = $("<table class='table table-hover table-bordered' style='border-bottom:0'  ></table>");
         $tableBody.append($thead.clone());
-        var $tbody = $("<tbody class='selectGrid_tbody' ></tbody>");
+        let $tbody = $("<tbody class='selectGrid_tbody' ></tbody>");
 
         $tableBody.append($tbody);
 
 
-        var $headerDiv = $("<div class='selectGrid_headerDiv' ></div>").append($tableHeader);
-        var $bodyDiv = $('<div class="pre-scrollable selectGrid_bodyDiv"  ></div>').append($tableBody);
+        let $headerDiv = $("<div class='selectGrid_headerDiv' ></div>").append($tableHeader);
+        let $bodyDiv = $('<div class="pre-scrollable selectGrid_bodyDiv"  ></div>').append($tableBody);
         if (!this.options.panelHeight.endsWith("%") && !this.options.panelHeight.endsWith("px")) {
-            $bodyDiv.css("height", this.options.panelHeight + "px");
+            $bodyDiv.css("max-height", this.options.panelHeight + "px");
         } else {
-            $bodyDiv.css("height", this.options.panelHeight);
+            $bodyDiv.css("max-height", this.options.panelHeight);
         }
         $("body").append($panelDiv.append($headerDiv).append($bodyDiv));
 
         //根据$tbody宽度调整$tableHeader宽度
-        var scrollWidth = getScrollbarWidth() + "px";
+        let scrollWidth = getScrollbarWidth() + "px";
         $tableHeader.css("width", 'calc(100% - ' + scrollWidth + ')');
         //调整tbody的margin-top,为负的(thead的高度+1px，1px为第一层tr的上边框高度)
-        $tableBody.css("marginTop", "-38px");
+        $tableBody.css("marginTop", -$headerDiv.outerHeight());
 
 
         //绑定各种事件
-        var _self = this;
+        let _self = this;
         //绑定行点击选中赋值事件
-        $tbody.on("click", "td", function (e) {
-            var target = e.target;
-            var $tr = $(target).parent();
-            var row = $tr.data("selectGrid_row");
+        $tbody.on("click", "tr:not(.selectGrid_no_result)", function (e) {
+            let target = e.target;
+            let $tr = $(target).parent();
+            let row = $tr.data("selectGrid_row");
 
-            var idField = _self.options.idField;
-            var textField = _self.options.textField;
-            var value = row[idField];
-            var text = row[textField];
+            let idField = _self.options.idField;
+            let textField = _self.options.textField;
+            let value = row[idField];
+            let text = row[textField];
 
             //选中后赋值..
             _self.$hideInput.val(value);
@@ -271,7 +258,7 @@
 
         //绑定失去焦点隐藏
         $("body").click(function (e) {
-            var $target = $(e.target);
+            let $target = $(e.target);
             //如果点击span之外则隐藏下拉框
             if (!$.contains(_self.$el.parent()[0], $target[0])
                 && !$.contains($target[0], _self.$el)) {
@@ -290,10 +277,10 @@
 
     //初始化change事件
     SelectGrid.prototype.initEvent = function () {
-        var _self = this;
+        let _self = this;
         //change
         this.$el.bind("input", function (e) {
-            var val = $(this).val();
+            let val = $(this).val();
             if (_self.options.inputChange) {
             	if (_self.options.inputChange(_self.$el, val) === false) {
 					return;
@@ -306,17 +293,18 @@
                     return;
                 }
                 //显示下拉框
-                var x = _self.$el.offset().top;
-                var y = _self.$el.offset().left;
-                var height = _self.$el.actual('outerHeight');
+                let x = _self.$el.offset().top;
+                let y = _self.$el.offset().left;
+                let height = _self.$el.outerHeight();
 
-                var top = x + height + 1;
-                var left = y + 1;
+                let top = x + height + 1;
+                let left = y + 1;
                 _self.$panelDiv.css("top", top + "px").css("left", left + "px");
                 _self.$panelDiv.show();
-                var url = _self.options.url;
+                _self.$bodyDiv.find("table").css("margin-top", - _self.$headerDiv.outerHeight());
+                let url = _self.options.url;
 
-                var reqParams = {};
+                let reqParams = {};
                 reqParams[_self.options.queryField] = val;
                 if (typeof _self.options.queryParams === "function") {
                     reqParams = _self.options.queryParams(reqParams);
@@ -324,24 +312,12 @@
                         return;
                     }
                 }
-                var header = _self.options.header;
                 //加载表格数据
-                jQuery.ajax({
-                    'type': 'GET',
-                    'url': url,
-                    'data': reqParams,
-                    'dataType': 'json',
-                    'beforeSend':function(request){
-                        if(header){
-                            request.setRequestHeader("mongoid",header);
-                        }
-                    },
-                    'success': function (data) {
-                        if (typeof _self.options.onBeforeLoad === "function") {
-                            data = _self.options.onBeforeLoad(data);
-                        }
-                        _self.loadData(data);
+                $.getJSON(url, reqParams, function (data) {
+                    if (typeof _self.options.onBeforeLoad === "function") {
+                        data = _self.options.onBeforeLoad(data);
                     }
+                    _self.loadData(data);
                 });
             }
         });
@@ -350,26 +326,31 @@
     //加载数据
     SelectGrid.prototype.loadData = function (data) {
 
-        var $tbody = this.$bodyDiv.find("tbody");
-        var $thead = this.$bodyDiv.find("thead");
-        var columns = this.options.columns;
+        let $tbody = this.$bodyDiv.find("tbody");
+        let $thead = this.$bodyDiv.find("thead");
+        let columns = this.options.columns;
         //清空之前的值
         $tbody.empty();
 
         if (data && data.length > 0) {
-            for (var i in data) {
-                var $tr = $("<tr></tr>");
-                for (var j in columns) {
-                    var field = columns[j].field;
-                    //var title = columns[j].title;
-                    var htmlValue = j.formatter ? j.formatter(data[i][field], data[i]) : data[i][field];
-                    var $td = $("<td></td>").html(htmlValue);
+            for (let i in data) {
+                let $tr = $("<tr></tr>");
+                for (let j in columns) {
+                    let field = columns[j].field;
+                    //let title = columns[j].title;
+                    let htmlValue = j.formatter ? j.formatter(data[i][field], data[i]) : data[i][field];
+                    let $td = $("<td></td>").html(htmlValue);
                     $tr.append($td);
 
                 }
                 $tr.data("selectGrid_row", data[i]);
                 $tbody.append($tr);
             }
+        } else {
+            let $tr = $("<tr class='selectGrid_no_result'></tr>");
+            let $td = $("<td></td>").text("查询无结果").attr("colspan", columns.length);
+            $tr.append($td);
+            $tbody.append($tr);
         }
 
         //加载完毕，触发onLoadSuccess
@@ -382,13 +363,13 @@
     //扩展jQuery
     $.fn.extend({
         selectGrid: function (option) {
-            var value,
+            let value,
                 args = Array.prototype.slice.call(arguments, 1);
 
 
             this.each(function () {
 
-                var $this = $(this),
+                let $this = $(this),
                     data = $this.data('bootstrap.selectGrid'),
                     options = $.extend({}, SelectGrid.DEFAULTS, $this.data(),
                         typeof option === 'object' && option);
@@ -415,7 +396,7 @@
 
                 //如果不存在SelectGrid对象，则初始化该元素为SelectGrid
                 if (!data) {
-                    $this.data('bootstrap.selectGrid', (data = new SelectGrid(this, options)));
+                    $this.data('bootstrap.selectGrid', (new SelectGrid(this, options)));
                 }
             });
 
@@ -425,7 +406,7 @@
 
     //获取滚动条宽度
     function getScrollbarWidth() {
-        var odiv = document.createElement('div'),//创建一个div
+        let odiv = document.createElement('div'),//创建一个div
             styles = {
                 width: '100px',
                 height: '100px',
@@ -439,7 +420,6 @@
     }
 
     function removeNode(obj) {
-
         if (isIE() || isIE11()) {
             obj.removeNode(true);
         } else {
@@ -448,24 +428,16 @@
     }
 
     function isIE() {
-        if (!!window.ActiveXObject || "ActiveXObject" in window) {
-            return true;
-        } else {
-            return false;
-        }
+        return !!window.ActiveXObject || "ActiveXObject" in window;
     }
 
     function isIE11() {
-        if ((/Trident\/7\./).test(navigator.userAgent)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (/Trident\/7\./).test(navigator.userAgent);
     }
 
-    //初始化所有data-selectGrid为true的元素
+    //初始化所有data-select-grid为true的元素
     $(function () {
-        $('[data-selectGrid="true"]').selectGrid();
+        $('[data-select-grid="true"]').selectGrid();
     });
 
 })(jQuery);

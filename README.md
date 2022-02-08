@@ -1,4 +1,4 @@
-# bootstrap-selectGrid 下拉表格选择插件
+# bootstrap-selectGrid 下拉表格选择插件(需要jquery)
 #### html
 ```
   <input type="text" class="form-control" id="dictName" name="dictName"

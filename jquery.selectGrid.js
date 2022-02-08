@@ -133,7 +133,7 @@
             this.$el.after($hideInput);
             let height = parseFloat(this.$el.css("height"));
             //字体图标的字体大小为总高度的30%,top为35%,right为fontSize+12px;
-            let $iconSpan = $("<span class='bi-triangle-bottom selectGrid_button' " +
+            let $iconSpan = $("<span class='bi bi-caret-down-fill selectGrid_button' " +
                 "style='position:absolute;font-size:" + (height * 0.3) + "px;line-height:" + height + "px;" +
                 "right:" + (height * 0.3 + 12) + "px;height:100%' >" +
                 "</span>");
